@@ -113,6 +113,8 @@ nav{
 .tl-year{font-family:var(--fm);font-size:.72rem;color:var(--ink3);letter-spacing:.06em;padding-top:.15rem}
 .tl-title{font-family:var(--ff);font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.18rem}
 .tl-sub{font-size:.8rem;color:var(--ink2);font-weight:300;line-height:1.5}
+.tl-bullets{margin-top:.55rem;padding-left:1rem;list-style:disc;display:flex;flex-direction:column;gap:.35rem}
+.tl-bullets li{font-size:.78rem;color:var(--ink2);font-weight:300;line-height:1.55}
 .contact-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.25rem}
 .contact-link{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--fm);font-size:.73rem;letter-spacing:.04em;padding:.32rem .85rem;border-radius:3px;border:1px solid var(--line);color:var(--ink2);text-decoration:none;background:var(--white);transition:color .2s,border-color .2s}
 .contact-link:hover{color:var(--ink);border-color:var(--ink3)}
@@ -357,32 +359,87 @@ nav{
     <div class="about-role fi" style="transition-delay:.1s">Ingeniero civil, mención transporte — Concepción, Chile</div>
     <div class="about-divider fi" style="transition-delay:.14s"></div>
     <p class="about-bio fi" style="transition-delay:.18s">
-      Soy un desarrollador de software con experiencia en construcción de sistemas de gestión, herramientas de análisis de datos y aplicaciones web. Me interesa crear soluciones que resuelvan problemas reales con claridad y criterio técnico. Disfruto trabajar en todo el ciclo de un proyecto, desde el diseño hasta la implementación.
+      Ingeniero civil con mención en Transporte, con experiencia en coordinación técnica de proyectos de planificación de transporte urbano, y el desarrollo de herramientas para facilitar y optimizar este trabajo. Dentros de estas herramientas se encuentran: software especializado para la asistencia en la generación y edición de redes de modelación SATURN, software para la visualización y automatización del cálculo de indicadores geoespaciales, software para el análisis descriptivo conjunto de viarias bases de datos de Encuestas Origen-Destino, entre otros.
     </p>
     <div class="about-section fi" style="transition-delay:.22s">
-      <span class="about-section-label">Habilidades</span>
-      <div class="skills-grid">
-        <span class="skill-tag">JavaScript</span><span class="skill-tag">Python</span>
-        <span class="skill-tag">SQL</span><span class="skill-tag">React</span>
-        <span class="skill-tag">Node.js</span><span class="skill-tag">REST APIs</span>
-        <span class="skill-tag">Git</span><span class="skill-tag">Análisis de datos</span>
-        <span class="skill-tag">HTML / CSS</span><span class="skill-tag">Bases de datos</span>
-      </div>
-    </div>
-    <div class="about-section fi" style="transition-delay:.26s">
       <span class="about-section-label">Experiencia & formación</span>
       <div class="timeline">
-        <div class="tl-item"><div class="tl-year">2023 – hoy</div><div><div class="tl-title">Desarrollador de software</div><div class="tl-sub">Empresa o proyecto — descripción breve del rol y responsabilidades.</div></div></div>
-        <div class="tl-item"><div class="tl-year">2021 – 2023</div><div><div class="tl-title">Rol anterior</div><div class="tl-sub">Empresa o proyecto — descripción breve del rol y responsabilidades.</div></div></div>
-        <div class="tl-item"><div class="tl-year">2016 – 2021</div><div><div class="tl-title">Carrera universitaria</div><div class="tl-sub">Universidad — Ingeniería / Informática o tu carrera.</div></div></div>
+        <div class="tl-item">
+          <div class="tl-year">May. 2022 – presente</div>
+          <div>
+            <div class="tl-title">Analista de sistemas de transporte regional</div>
+            <div class="tl-sub">SECTRA SUR</div>
+            <ul class="tl-bullets">
+              <li>Coordinación técnica del Estudio de Movilidad Sustentable para la Comuna de Nueva Imperial.</li>
+              <li>Participación como contraparte técnica en estudios de MOP, SERVIU y DTPR de Araucanía, Ñuble y Biobío.</li>
+              <li>Revisión de numerosos IMIVs intermedios y mayores.</li>
+              <li>Generación de aplicación para el análisis automatizado simultáneo de diversas bases de datos de Encuestas Origen-Destino.</li>
+              <li>Generación de rutinas en Python para el cálculo automatizado de la demanda potencial de servicios de transporte urbano (trenes urbanos, teleféricos).</li>
+              <li>Participación como expositor en el Congreso IINTRA 2024.</li>
+              <li>Participación como expositor de infografía en el Congreso Chileno de Transporte 2025.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">Jun. 2021 – Dic. 2021</div>
+          <div>
+            <div class="tl-title">Analista — Plan de Movilidad Gran Concepción 2050</div>
+            <div class="tl-sub">SECTRA</div>
+            <ul class="tl-bullets">
+              <li>Estudio de patrones de movilidad en el Gran Concepción usando datos EOD 2015–2016 y fuentes territoriales: análisis por modo, perfil de usuario y origen/destino.</li>
+              <li>Apoyo en revisión de catastro vial y análisis del espacio público según modo de transporte (vehículo particular, transporte público y modos activos).</li>
+              <li>Análisis del servicio del Biotrén: situación actual y cálculo de demanda potencial por aumento de frecuencia, cambio de trazados y nuevas estaciones.</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
     <div class="about-section fi" style="transition-delay:.3s">
+      <span class="about-section-label">Educación</span>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">2020 – 2022</div>
+          <div>
+            <div class="tl-title">Ingeniería Civil con profundización en transporte</div>
+            <div class="tl-sub">Universidad de Concepción</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2016 – 2019</div>
+          <div>
+            <div class="tl-title">Licenciatura en ciencias de la ingeniería</div>
+            <div class="tl-sub">Universidad de Concepción</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="about-section fi" style="transition-delay:.34s">
+      <span class="about-section-label">Cursos realizados</span>
+      <div class="skills-grid">
+        <span class="skill-tag">Inducción general a la administración del estado</span>
+        <span class="skill-tag">Preparación y evaluación social de proyectos</span>
+        <span class="skill-tag">Modelación microscópica de tráfico: AIMSUN</span>
+        <span class="skill-tag">Herramientas de programación y estructuras Python</span>
+        <span class="skill-tag">Modelo de asignación de redes de tráfico SATURN</span>
+        <span class="skill-tag">Manejo de PowerBI, nivel básico</span>
+        <span class="skill-tag">Curso de Integridad Pública</span>
+        <span class="skill-tag">Género y Transporte</span>
+        <span class="skill-tag">Ley Karin: En vías a la implementación de la Ley 21.643</span>
+      </div>
+    </div>
+    <div class="about-section fi" style="transition-delay:.42s">
+      <span class="about-section-label">Aptitudes</span>
+      <ul class="tl-bullets" style="padding-left:1rem">
+        <li>Manejo de inglés avanzado, tanto hablado como escrito.</li>
+        <li>Manejo de Excel, Word, PowerPoint, Python, QGIS, AIMSUN, SATURN, RStudio y Matlab.</li>
+        <li>Conocimientos básicos de PowerBI, ESTRAUS y AutoCAD.</li>
+        <li>Licencia de conducir clase B.</li>
+      </ul>
+    </div>
+    <div class="about-section fi" style="transition-delay:.46s">
       <span class="about-section-label">Contacto</span>
       <div class="contact-row">
-        <a class="contact-link" href="mailto:tu@email.com">✉ tu@email.com</a>
-        <a class="contact-link" href="https://linkedin.com" target="_blank">↗ LinkedIn</a>
-        <a class="contact-link" href="https://github.com" target="_blank">↗ GitHub</a>
+        <a class="contact-link" href="mailto:sebacamposs@hotmail.com">✉ sebacamposs@hotmail.com</a>
       </div>
     </div>
   </div>
@@ -400,9 +457,7 @@ nav{
     <p class="about-bio fi" style="transition-delay:.14s">Si tienes un proyecto en mente, una pregunta técnica, o simplemente quieres ponerte en contacto, puedes escribirme por cualquiera de estos medios.</p>
     <div class="about-section fi" style="transition-delay:.18s">
       <div class="contact-row">
-        <a class="contact-link" href="mailto:tu@email.com">✉ tu@email.com</a>
-        <a class="contact-link" href="https://linkedin.com" target="_blank">↗ LinkedIn</a>
-        <a class="contact-link" href="https://github.com" target="_blank">↗ GitHub</a>
+        <a class="contact-link" href="mailto:sebacamposs@hotmail.com">✉ sebacamposs@hotmail.com</a>
       </div>
     </div>
   </div>
@@ -417,15 +472,15 @@ const projects = [
    desc:'Jupiter es un generador de redes de modelación SATURN. Se define un polígono sobre el mapa, y se descarga información de Open Street Map, a partir de la cual se genera el archivo .dat correspondiente a la red de modelación.',
    tags:['Web App','Dashboard','Base de datos','Gestión','Control de acceso'],
    },
-  {id:'neptuno', name:'Neptuno',     init:'Ne', icon:'iconos/neptuno.png', color:'#5a8a6a', num:'02', tagline:'Visor y editor de redes SATURN', video:'191oZZ0XoZqAVMRtVnes_9jBX-GcCBfvN',
+  {id:'neptuno', name:'Neptuno',     init:'Ne', icon:'iconos/neptuno.png', color:'#5a8a6a', num:'02', tagline:'Visor y editor de redes SATURN', video:'VIDEO_ID_NEPTUNO',
    desc:'Neptuno es un visualizador y editor de redes de modelación SATURN. Cargas un archivo .dat, y este se despliega sobre un mapa base. Con el se pueden agregar y eliminar nodos, agregar y eliminar arcos, agregar y eliminar zonas, agregar pistas solo bus, entre otras opciones.',
    tags:['Plataforma','APIs REST','Arquitectura modular','Multiusuario'],
    },
-  {id:'ciclo',   name:'Ciclorrutas', init:'Ci', icon:'iconos/ciclovias.png', color:'#a05c3a', num:'03', tagline:'Evaluador gráfico de Planes Maestros de Ciclorrutas', video:'15Qzyfo1UfPcxHXAV41KR6BnJ56KL7HPB',
+  {id:'ciclo',   name:'Ciclorrutas', init:'Ci', icon:'iconos/ciclovias.png', color:'#a05c3a', num:'03', tagline:'Evaluador gráfico de Planes Maestros de Ciclorrutas', video:'VIDEO_ID_CICLO',
    desc:'Herramienta especializada para evaluar planes maestros de ciclorrutas urbanas. Tras cargar la información necesaria, permite trazar diversas configuraciones de red y evaluar el desempeño de los indicadores espaciales de forma automática e instantánea.',
    tags:['GIS','Movilidad urbana','Análisis de riesgo','Planificación'],
    },
-  {id:'eod',     name:'EOD',         init:'Eo', icon:'iconos/eod.png', color:'#7a5c8a', num:'04', tagline:'Análisis de bases de datos de EOD', video:'1Cjtq4qz_TVxM9izDIDRZjd8E0UbgGdFc',
+  {id:'eod',     name:'EOD',         init:'Eo', icon:'iconos/eod.png', color:'#7a5c8a', num:'04', tagline:'Análisis de bases de datos de EOD', video:'VIDEO_ID_EOD',
    desc:'Sistema de procesamiento y visualización de datos de Encuesta Origen-Destino. Permite analizar estadística descriptiva de varias bases de datos de Encuestas Origen Destino de forma simultánea y expedita.',
    tags:['Análisis de datos','Python','Visualización','Transporte'],
    },

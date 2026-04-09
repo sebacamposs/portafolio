@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portafolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f2ec;--ink:#1a1814;--ink2:#5a574f;--ink3:#9a9790;
+  --line:#d8d4cc;--white:#ffffff;
+  --ff:'Playfair Display',Georgia,serif;
+  --fb:'IBM Plex Sans',sans-serif;
+  --fm:'IBM Plex Mono',monospace;
+  --nav:52px;--foot:34px;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:var(--fb)}
+body.scroll-open{overflow:auto}
+
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 2.5rem;background:var(--bg);border-bottom:1px solid var(--line);
+}
+.nav-left{display:flex;align-items:center;gap:2rem}
+.nav-logo{font-family:var(--ff);font-size:1rem;font-weight:400;color:var(--ink);text-decoration:none;transition:opacity .2s}
+.nav-logo:hover{opacity:.6}
+.nav-about-btn{font-size:.75rem;letter-spacing:.06em;color:var(--ink2);background:none;border:1px solid var(--line);cursor:pointer;font-family:var(--fb);padding:.32rem .8rem;border-radius:3px;transition:color .2s,border-color .2s,background .2s}
+.nav-about-btn:hover{color:var(--ink);border-color:var(--ink3)}
+.nav-about-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.nav-right{display:flex;align-items:center;gap:1.5rem}
+.nav-label{display:none}
+.nav-back{display:none;align-items:center;gap:.4rem;font-size:.78rem;color:var(--ink2);background:none;border:none;cursor:pointer;font-family:var(--fb);letter-spacing:.04em;padding:0;transition:color .2s}
+.nav-back:hover{color:var(--ink)}
+
+/* ── HOME (desktop) ── */
+#view-home{position:fixed;left:0;right:0;top:var(--nav);bottom:var(--foot);overflow:hidden}
+#home-inner{position:relative;min-height:max(100%,640px);}
+#view-home::before{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:48px 48px;opacity:.3;pointer-events:none;z-index:0;
+}
+
+#ring-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+#line-svg{position:absolute;inset:0;pointer-events:none;z-index:2}
+
+.center-word{
+  position:absolute;left:50%;top:46%;
+  transform:translate(-50%,-50%);
+  font-family:var(--ff);font-size:clamp(2.2rem,5vw,4.5rem);
+  font-weight:700;color:var(--ink);letter-spacing:-.02em;
+  user-select:none;pointer-events:none;z-index:3;white-space:nowrap;
+}
+
+.node-wrap{position:absolute;transform:translate(-50%,-50%);z-index:10}
+.node{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1.5px solid var(--line);background:var(--white);transition:transform .26s cubic-bezier(.34,1.4,.64,1),box-shadow .26s;position:relative}
+.node:hover{transform:scale(1.15);box-shadow:0 6px 22px rgba(0,0,0,.1)}
+
+.tooltip{position:fixed;background:var(--white);border:1px solid var(--line);border-radius:5px;padding:.7rem 1rem;width:200px;pointer-events:none;opacity:0;transition:opacity .17s;text-align:left;z-index:300;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.tt-num{font-family:var(--fm);font-size:.65rem;color:var(--ink3);margin-bottom:.25rem;letter-spacing:.07em}
+.tt-name{font-family:var(--ff);font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:.2rem}
+.tt-desc{font-size:.73rem;color:var(--ink2);line-height:1.5}
+.tt-hint{font-size:.65rem;margin-top:.45rem;color:var(--ink3);font-family:var(--fm)}
+
+.node-label{
+  position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);
+  white-space:nowrap;font-family:var(--fm);font-size:.65rem;color:var(--ink3);
+  letter-spacing:.04em;text-align:center;pointer-events:none;
+}
+.corner-label{display:none}
+
+/* ── FOOTER BAR ── */
+#footer-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  height:var(--foot);
+  display:flex;align-items:center;
+  padding:0 2.5rem;
+  background:var(--bg);border-top:1px solid var(--line);
+}
+#footer-bar span{
+  font-family:var(--fm);font-size:.63rem;letter-spacing:.10em;
+  text-transform:uppercase;color:var(--ink3);
+}
+@media(max-width:640px){
+  #footer-bar{padding:0 1.25rem}
+  #footer-bar span{font-size:.6rem;letter-spacing:.07em}
+}
+
+/* ── CONTACT NAV BTN ── */
+.nav-contact-btn{font-size:.75rem;letter-spacing:.06em;color:var(--ink2);background:none;border:1px solid var(--line);cursor:pointer;font-family:var(--fb);padding:.32rem .8rem;border-radius:3px;transition:color .2s,border-color .2s,background .2s}
+.nav-contact-btn:hover{color:var(--ink);border-color:var(--ink3)}
+.nav-contact-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+
+/* ── ABOUT ── */
+#view-about{display:none;position:fixed;inset:0;top:var(--nav);bottom:var(--foot);overflow-y:auto;background:var(--bg);z-index:100}
+#view-about::before{content:'';position:fixed;inset:0;top:var(--nav);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;opacity:.22;pointer-events:none;z-index:0}
+.about-inner{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:4rem 2.5rem 6rem}
+.about-eyebrow{font-family:var(--fm);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin-bottom:1.2rem;display:block}
+.about-name{font-family:var(--ff);font-size:clamp(2.4rem,5.5vw,4rem);font-weight:700;color:var(--ink);letter-spacing:-.025em;line-height:1.05;margin-bottom:.5rem}
+.about-role{font-size:1rem;color:var(--ink2);font-weight:300;margin-bottom:2.5rem}
+.about-divider{height:1px;background:var(--line);margin-bottom:2.5rem}
+.about-bio{font-size:1.02rem;font-weight:300;line-height:1.9;color:var(--ink2);margin-bottom:3rem;border-left:2px solid var(--line);padding-left:1.25rem}
+.about-section{margin-bottom:2.75rem}
+.about-section-label{font-family:var(--fm);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);margin-bottom:1rem;display:block}
+.skills-grid{display:flex;flex-wrap:wrap;gap:.45rem}
+.skill-tag{font-family:var(--fm);font-size:.72rem;padding:.3rem .8rem;border-radius:3px;border:1px solid var(--line);color:var(--ink2);background:var(--white);letter-spacing:.04em}
+.timeline{display:flex;flex-direction:column}
+.tl-item{display:grid;grid-template-columns:96px 1fr;gap:0 1.5rem;padding:1.25rem 0;border-bottom:1px solid var(--line)}
+.tl-item:first-child{border-top:1px solid var(--line)}
+.tl-year{font-family:var(--fm);font-size:.72rem;color:var(--ink3);letter-spacing:.06em;padding-top:.15rem}
+.tl-title{font-family:var(--ff);font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.18rem}
+.tl-sub{font-size:.8rem;color:var(--ink2);font-weight:300;line-height:1.5}
+.contact-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.25rem}
+.contact-link{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--fm);font-size:.73rem;letter-spacing:.04em;padding:.32rem .85rem;border-radius:3px;border:1px solid var(--line);color:var(--ink2);text-decoration:none;background:var(--white);transition:color .2s,border-color .2s}
+.contact-link:hover{color:var(--ink);border-color:var(--ink3)}
+
+/* ── PROJECT PAGE ── */
+#view-project{display:none;min-height:100vh;padding-top:var(--nav)}
+.proj-top{padding:3.5rem 2.5rem 3rem;border-bottom:1px solid var(--line);max-width:720px;margin:0 auto}
+.proj-num{font-family:var(--fm);font-size:.7rem;color:var(--ink3);letter-spacing:.1em;margin-bottom:.9rem;display:block}
+.proj-title{font-family:var(--ff);font-size:clamp(2.2rem,5vw,3.8rem);font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.05;margin-bottom:.45rem}
+.proj-tagline{font-size:.98rem;color:var(--ink2);font-weight:300;margin-bottom:1.6rem}
+.proj-accent-line{width:42px;height:3px;border-radius:2px}
+.proj-body{max-width:720px;margin:0 auto;padding:2.5rem 2.5rem 5rem}
+.section-label{font-family:var(--fm);font-size:.67rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:.7rem;display:block}
+.proj-desc{font-size:1rem;font-weight:300;line-height:1.85;color:var(--ink2);margin-bottom:2.25rem;border-left:2px solid var(--line);padding-left:1.2rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:2.25rem}
+.chip{font-family:var(--fm);font-size:.7rem;padding:.27rem .72rem;border-radius:3px;border:1px solid var(--line);color:var(--ink2);background:var(--white);letter-spacing:.04em}
+.feats{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:1px;border:1px solid var(--line);background:var(--line);margin-bottom:2.25rem;border-radius:4px;overflow:hidden}
+.fcard{background:var(--white);padding:1.1rem 1.15rem}
+.fnum{font-family:var(--fm);font-size:.62rem;color:var(--ink3);margin-bottom:.42rem;letter-spacing:.08em}
+.ftitle{font-family:var(--ff);font-size:.87rem;font-weight:700;color:var(--ink);margin-bottom:.22rem}
+.fbody{font-size:.77rem;color:var(--ink2);line-height:1.55;font-weight:300}
+.back-btn{display:inline-flex;align-items:center;gap:.45rem;padding:.58rem 1.15rem;border-radius:3px;background:var(--white);border:1px solid var(--line);color:var(--ink2);cursor:pointer;font-family:var(--fb);font-size:.8rem;transition:border-color .2s,color .2s}
+.back-btn:hover{border-color:var(--ink3);color:var(--ink)}
+.fi{opacity:0;transform:translateY(12px);transition:opacity .42s ease,transform .42s ease}
+.fi.show{opacity:1;transform:none}
+
+/* ── MOBILE ── */
+@media(max-width:640px){
+  nav{padding:0 1.25rem}
+  .nav-label{display:none}
+  .proj-top,.proj-body,.about-inner{padding-left:1.25rem;padding-right:1.25rem}
+
+  /* ocultar vista desktop, mostrar móvil */
+  #view-home{display:none !important}
+  #view-mobile{display:block}
+  .corner-label{display:none}
+
+  /* view-project y view-about siguen funcionando igual */
+}
+
+/* ── MOBILE VIEW ── */
+#view-mobile{
+  display:none;
+  position:fixed;left:0;right:0;top:var(--nav);bottom:var(--foot);
+  overflow-y:auto;background:var(--bg);
+}
+
+/* panel info */
+.mob-info{display:none}
+.mob-eyebrow{font-family:var(--fm);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:.5rem}
+.mob-name{font-family:var(--ff);font-size:1.45rem;font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-bottom:.2rem}
+.mob-role{font-size:.82rem;color:var(--ink2);font-weight:300}
+
+/* zona scatter — ocupa todo lo que queda del viewport tras el panel info */
+.mob-scatter{
+  position:relative;
+  height:42vh;
+  min-height:220px;
+  overflow:hidden;background:var(--bg);
+}
+#mob-ring-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.mob-scatter::before{content:none}
+.mob-node{
+  position:absolute;width:76px;height:76px;border-radius:50%;
+  background:var(--white);border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:transform .18s cubic-bezier(.34,1.4,.64,1);
+  z-index:2;
+}
+.mob-node:active{transform:scale(.9) !important}
+.mob-node img{width:46px;height:46px;object-fit:contain;display:block}
+
+/* sobre mí — fondo continuo igual al resto */
+.mob-about{
+  background:var(--bg);
+  padding:1.25rem 1.25rem 1.25rem;
+}
+.mob-section-label{font-family:var(--fm);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:.85rem;display:block}
+.mob-placeholder{height:10px;background:var(--line);border-radius:3px;margin-bottom:7px;opacity:.45}
+
+/* botón ver proyectos */
+.mob-see-btn{
+  display:block;width:100%;padding:1rem;margin-top:1.1rem;
+  border:1px solid var(--line);border-radius:4px;
+  background:var(--bg);color:var(--ink);
+  font-family:var(--fb);font-size:.85rem;font-weight:500;
+  text-align:center;cursor:pointer;
+  transition:border-color .15s;
+}
+.mob-see-btn:hover{border-color:var(--ink3)}
+
+/* lista de proyectos — fondo continuo */
+.mob-proj-list{background:var(--bg);padding:.5rem 0 3rem}
+.mob-proj-list-label{
+  font-family:var(--fm);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);padding:.9rem 1.25rem .6rem;display:block;
+}
+.mob-proj-row{background:var(--bg);border-top:1px solid var(--line);overflow:hidden}
+.mob-proj-row:last-child{border-bottom:1px solid var(--line)}
+
+.mob-proj-header{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.85rem 1.25rem;cursor:pointer;user-select:none;
+}
+.mob-proj-icon{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:var(--bg);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+}
+.mob-proj-icon img{width:22px;height:22px;object-fit:contain;display:block}
+.mob-proj-header-text{flex:1;min-width:0}
+.mob-proj-name{font-family:var(--ff);font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:.08rem}
+.mob-proj-sub{font-family:var(--fm);font-size:.65rem;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mob-proj-chevron{font-size:.7rem;color:var(--ink3);transition:transform .22s;flex-shrink:0;margin-left:.25rem}
+.mob-proj-chevron.open{transform:rotate(180deg)}
+
+.mob-proj-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.mob-proj-body.open{max-height:600px}
+.mob-proj-body-inner{
+  padding:.1rem 1.25rem 1.25rem 1.25rem;
+  border-top:1px solid var(--line);
+}
+.mob-proj-desc{
+  font-size:.82rem;font-weight:300;line-height:1.8;
+  color:var(--ink2);margin:.9rem 0 .9rem;
+  border-left:2px solid var(--line);padding-left:.9rem;
+}
+.mob-proj-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.9rem}
+.mob-proj-tag{font-family:var(--fm);font-size:.65rem;padding:.22rem .6rem;border-radius:3px;border:1px solid var(--line);color:var(--ink2);background:var(--white)}
+.mob-proj-open-btn{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.45rem .9rem;border-radius:3px;
+  background:var(--white);border:1px solid var(--line);
+  color:var(--ink2);font-family:var(--fb);font-size:.75rem;
+  cursor:pointer;transition:border-color .2s,color .2s;
+}
+.mob-proj-open-btn:hover{border-color:var(--ink3);color:var(--ink)}
+
+/* ── MOBILE NODE POPUP ── */
+#mob-node-popup{
+  position:absolute;z-index:20;
+  background:var(--white);border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 28px rgba(0,0,0,.11);
+  padding:1rem 1.1rem;width:200px;
+  pointer-events:auto;
+  opacity:0;transform:scale(.88) translateY(6px);
+  transition:opacity .2s ease,transform .2s cubic-bezier(.34,1.4,.64,1);
+}
+#mob-node-popup.visible{opacity:1;transform:scale(1) translateY(0)}
+.mnp-name{font-family:var(--ff);font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.18rem}
+.mnp-tagline{font-size:.72rem;color:var(--ink2);font-weight:300;line-height:1.5;margin-bottom:.7rem}
+.mnp-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.75rem}
+.mnp-tag{font-family:var(--fm);font-size:.6rem;padding:.18rem .52rem;border-radius:3px;border:1px solid var(--line);color:var(--ink2);background:var(--bg)}
+.mnp-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;padding:.48rem .75rem;border-radius:4px;
+  background:var(--ink);color:var(--white);
+  font-family:var(--fb);font-size:.75rem;font-weight:500;
+  border:none;cursor:pointer;letter-spacing:.02em;
+  transition:opacity .15s;
+}
+.mnp-btn:active{opacity:.8}
+.mnp-accent{display:block;width:28px;height:2px;border-radius:2px;margin-bottom:.65rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-logo" href="#" id="nav-logo">Sebastián Campos Sánchez</a>
+    <button class="nav-about-btn" id="nav-about-btn">CV</button>
+    <button class="nav-contact-btn" id="nav-contact-btn">Contacto</button>
+  </div>
+  <div class="nav-right">
+    <span class="nav-label" id="nav-label">Ingeniería civil en transporte     |     Software</span>
+    <button class="nav-back" id="nav-back">← Volver</button>
+  </div>
+</nav>
+
+<!-- ── DESKTOP HOME ── -->
+<div id="view-home">
+  <canvas id="ring-canvas"></canvas>
+  <svg id="line-svg"></svg>
+  <div class="center-word">proyectos</div>
+</div>
+
+<!-- ── MOBILE HOME ── -->
+<div id="view-mobile">
+  <div class="mob-info">
+    <div class="mob-eyebrow"></div>
+    <div class="mob-name"></div>
+  </div>
+
+  <div class="mob-scatter" id="mob-scatter"><canvas id="mob-ring-canvas"></canvas>
+    <span style="position:absolute;top:.6rem;left:.85rem;font-family:var(--fm);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);z-index:5;pointer-events:none">Proyectos</span>
+  </div>
+
+<div class="mob-about">
+    <span class="mob-section-label">sobre mí</span>
+    <p style="font-size:1rem;font-weight:300;line-height:1.8;color:var(--ink2);">
+        Ingeniero civil con mención en Transporte, con experiencia en coordinación técnica de proyectos de planificación de transporte urbano, y el desarrollo de herramientas para facilitar y optimizar este trabajo.
+    </p>
+    <button class="mob-see-btn" id="mob-see-btn">ver proyectos ↓</button>
+</div>
+
+  <div class="mob-proj-list" id="mob-proj-list">
+    <span class="mob-proj-list-label">proyectos</span>
+  </div>
+</div>
+
+<!-- ── ABOUT ── -->
+<div id="view-about">
+  <div class="about-inner">
+    <span class="about-eyebrow fi">Sobre mí</span>
+    <div class="about-name fi" style="transition-delay:.06s">Sebastián Campos Sánchez</div>
+    <div class="about-role fi" style="transition-delay:.1s">Ingeniero civil, mención transporte — Concepción, Chile</div>
+    <div class="about-divider fi" style="transition-delay:.14s"></div>
+    <p class="about-bio fi" style="transition-delay:.18s">
+      Soy un desarrollador de software con experiencia en construcción de sistemas de gestión, herramientas de análisis de datos y aplicaciones web. Me interesa crear soluciones que resuelvan problemas reales con claridad y criterio técnico. Disfruto trabajar en todo el ciclo de un proyecto, desde el diseño hasta la implementación.
+    </p>
+    <div class="about-section fi" style="transition-delay:.22s">
+      <span class="about-section-label">Habilidades</span>
+      <div class="skills-grid">
+        <span class="skill-tag">JavaScript</span><span class="skill-tag">Python</span>
+        <span class="skill-tag">SQL</span><span class="skill-tag">React</span>
+        <span class="skill-tag">Node.js</span><span class="skill-tag">REST APIs</span>
+        <span class="skill-tag">Git</span><span class="skill-tag">Análisis de datos</span>
+        <span class="skill-tag">HTML / CSS</span><span class="skill-tag">Bases de datos</span>
+      </div>
+    </div>
+    <div class="about-section fi" style="transition-delay:.26s">
+      <span class="about-section-label">Experiencia & formación</span>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-year">2023 – hoy</div><div><div class="tl-title">Desarrollador de software</div><div class="tl-sub">Empresa o proyecto — descripción breve del rol y responsabilidades.</div></div></div>
+        <div class="tl-item"><div class="tl-year">2021 – 2023</div><div><div class="tl-title">Rol anterior</div><div class="tl-sub">Empresa o proyecto — descripción breve del rol y responsabilidades.</div></div></div>
+        <div class="tl-item"><div class="tl-year">2016 – 2021</div><div><div class="tl-title">Carrera universitaria</div><div class="tl-sub">Universidad — Ingeniería / Informática o tu carrera.</div></div></div>
+      </div>
+    </div>
+    <div class="about-section fi" style="transition-delay:.3s">
+      <span class="about-section-label">Contacto</span>
+      <div class="contact-row">
+        <a class="contact-link" href="mailto:tu@email.com">✉ tu@email.com</a>
+        <a class="contact-link" href="https://linkedin.com" target="_blank">↗ LinkedIn</a>
+        <a class="contact-link" href="https://github.com" target="_blank">↗ GitHub</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-bar"><span>Ingeniería civil en transporte &nbsp;·&nbsp; Software</span></div>
+
+<!-- ── CONTACT VIEW ── -->
+<div id="view-contact" style="display:none;position:fixed;inset:0;top:var(--nav);bottom:var(--foot);overflow-y:auto;background:var(--bg);z-index:100">
+  <div style="position:fixed;inset:0;top:var(--nav);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;opacity:.22;pointer-events:none;z-index:0"></div>
+  <div style="position:relative;z-index:1;max-width:480px;margin:0 auto;padding:4rem 2.5rem 6rem">
+    <span class="about-eyebrow fi">Contacto</span>
+    <div class="about-name fi" style="transition-delay:.06s">Hablemos</div>
+    <div class="about-divider fi" style="transition-delay:.1s;margin-top:.8rem"></div>
+    <p class="about-bio fi" style="transition-delay:.14s">Si tienes un proyecto en mente, una pregunta técnica, o simplemente quieres ponerte en contacto, puedes escribirme por cualquiera de estos medios.</p>
+    <div class="about-section fi" style="transition-delay:.18s">
+      <div class="contact-row">
+        <a class="contact-link" href="mailto:tu@email.com">✉ tu@email.com</a>
+        <a class="contact-link" href="https://linkedin.com" target="_blank">↗ LinkedIn</a>
+        <a class="contact-link" href="https://github.com" target="_blank">↗ GitHub</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="corner-label" id="corner-lbl"></div>
+<div id="view-project"></div>
+
+<script>
+const projects = [
+  {id:'jupiter', name:'Jupiter',     init:'Ju', icon:'iconos/jupiter.png', color:'#4a6fa5', num:'01', tagline:'Generador de redes SATURN', video:'VIDEO_ID_JUPITER',
+   desc:'Jupiter es un generador de redes de modelación SATURN. Se define un polígono sobre el mapa, y se descarga información de Open Street Map, a partir de la cual se genera el archivo .dat correspondiente a la red de modelación.',
+   tags:['Web App','Dashboard','Base de datos','Gestión','Control de acceso'],
+   features:[{n:'01',t:'Panel central',b:'Vista unificada de toda la información con filtros dinámicos.'},{n:'02',t:'Métricas en vivo',b:'Indicadores en tiempo real con histórico configurable.'},{n:'03',t:'Roles y permisos',b:'Control de acceso granular por módulo y usuario.'},{n:'04',t:'Exportación',b:'Reportes en múltiples formatos listos para distribuir.'}]},
+  {id:'neptuno', name:'Neptuno',     init:'Ne', icon:'iconos/neptuno.png', color:'#5a8a6a', num:'02', tagline:'Visor y editor de redes SATURN', video:'VIDEO_ID_NEPTUNO',
+   desc:'Neptuno es un visualizador y editor de redes de modelación SATURN. Cargas un archivo .dat, y este se despliega sobre un mapa base. Con el se pueden agregar y eliminar nodos, agregar y eliminar arcos, agregar y eliminar zonas, agregar pistas solo bus, entre otras opciones.',
+   tags:['Plataforma','APIs REST','Arquitectura modular','Multiusuario'],
+   features:[{n:'01',t:'Módulos intercambiables',b:'Componentes que se activan o desactivan según el contexto.'},{n:'02',t:'Integraciones externas',b:'Conexión con servicios de terceros mediante APIs estándar.'},{n:'03',t:'Gestión de usuarios',b:'Sesiones, roles y auditoría de accesos integrados.'},{n:'04',t:'Alto rendimiento',b:'Optimizado para grandes volúmenes de solicitudes simultáneas.'}]},
+  {id:'ciclo',   name:'Ciclorrutas', init:'Ci', icon:'iconos/ciclovias.png', color:'#a05c3a', num:'03', tagline:'Evaluador gráfico de Planes Maestros de Ciclorrutas', video:'VIDEO_ID_CICLO',
+   desc:'Herramienta especializada para evaluar planes maestros de ciclorrutas urbanas. Tras cargar la información necesaria, permite trazar diversas configuraciones de red y evaluar el desempeño de los indicadores espaciales de forma automática e instantánea.',
+   tags:['GIS','Movilidad urbana','Análisis de riesgo','Planificación'],
+   features:[{n:'01',t:'Visualización de rutas',b:'Trayectos en mapas interactivos con capas de contexto.'},{n:'02',t:'Detección de riesgos',b:'Puntos conflictivos identificados automáticamente.'},{n:'03',t:'Criterios configurables',b:'Rúbricas ajustables según normativa local.'},{n:'04',t:'Informe de resultados',b:'Reportes con puntajes y recomendaciones técnicas.'}]},
+  {id:'eod',     name:'EOD',         init:'Eo', icon:'iconos/eod.png', color:'#7a5c8a', num:'04', tagline:'Análisis de bases de datos de EOD', video:'VIDEO_ID_EOD',
+   desc:'Sistema de procesamiento y visualización de datos de Encuesta Origen-Destino. Permite analizar estadística descriptiva de varias bases de datos de Encuestas Origen Destino de forma simultánea y expedita.',
+   tags:['Análisis de datos','Python','Visualización','Transporte'],
+   features:[{n:'01',t:'Ingesta de datos',b:'Procesamiento de grandes volúmenes de respuestas EOD.'},{n:'02',t:'Métricas de movilidad',b:'Distancias, tiempos, modos y propósitos de viaje.'},{n:'03',t:'Segmentación',b:'Análisis por zona, franja horaria y perfil demográfico.'},{n:'04',t:'Visualizaciones',b:'Gráficos interactivos y mapas de flujos.'}]},
+  {id:'inv',     name:'Inventario',  init:'In', icon:'iconos/arsenal.png', color:'#8a7a3a', num:'05', tagline:'Inventario dinámico de herramientas', video:'VIDEO_ID_INV',
+   desc:'Sistema de inventario que se actualiza en tiempo real en todos los dispositivos donde se está utilizando. Permite mantener el control y organización de la ubicación de las distintas herramientas con las que cuenta un equipo de trabajo.',
+   tags:['CRUD','Tiempo real','Alertas','Reportes','Gestión'],
+   features:[{n:'01',t:'Registro de movimientos',b:'Historial de entradas, salidas y ajustes con trazabilidad.'},{n:'02',t:'Alertas automáticas',b:'Notificaciones por umbral mínimo de stock.'},{n:'03',t:'Búsqueda avanzada',b:'Filtros por categoría, proveedor, fecha y estado.'},{n:'04',t:'Reportes periódicos',b:'Resúmenes diarios, semanales o mensuales exportables.'}]},
+  {id:'seg',     name:'Seguridad',   init:'Se', icon:'iconos/ipecr.png', color:'#a05070', num:'06', tagline:'Formulario IPECR', video:'VIDEO_ID_SEG',
+   desc:'Formalización de formulario IPECR, desarrollado de forma que sea fácil de completar para el usuario, y la información posteriormente le llega de forma automática por correo al encargado del formulario.',
+   tags:['Formularios','Seguridad','Workflow','Validaciones dinámicas'],
+   features:[{n:'01',t:'Registro estructurado',b:'Campos adaptativos según la categoría del incidente.'},{n:'02',t:'Validaciones en tiempo real',b:'Lógica dinámica para integridad de datos.'},{n:'03',t:'Flujo de aprobación',b:'Revisión multi-nivel con notificaciones automáticas.'},{n:'04',t:'Trazabilidad completa',b:'Historial de estado y acciones por caso.'}]}
+];
+
+// ── MOBILE ────────────────────────────────────────────────
+const isMobile = () => window.innerWidth <= 640;
+
+// scatter positioning (no overlap)
+function scatterPositions(n, W, H, r, topMargin) {
+  const positions = [], margin = r + 4;
+  const minY = Math.max(margin, topMargin || 0);
+  for (let i = 0; i < n; i++) {
+    let placed = false;
+    for (let a = 0; a < 500; a++) {
+      const x = margin + Math.random() * (W - margin * 2);
+      const y = minY + Math.random() * (H - minY - margin);
+      let ok = true;
+      for (const p of positions) {
+        if (Math.hypot(p.x - x, p.y - y) < r * 2 + 14) { ok = false; break; }
+      }
+      if (ok) { positions.push({x, y}); placed = true; break; }
+    }
+    if (!placed) positions.push({
+      x: margin + Math.random() * (W - margin * 2),
+      y: minY + Math.random() * (H - minY - margin)
+    });
+  }
+  return positions;
+}
+
+// Mobile ring animation
+const MOB_RING_DEFS = [
+  {cx:30,cy:35,r:22},{cx:65,cy:55,r:18},{cx:48,cy:70,r:30},{cx:70,cy:28,r:14}
+];
+let mobRings = MOB_RING_DEFS.map(d=>({...d,curCX:d.cx,curCY:d.cy,curR:d.r,tgtCX:d.cx,tgtCY:d.cy,tgtR:d.r}));
+let mobRafId = null;
+
+function startMobRings() {
+  const canvas = document.getElementById('mob-ring-canvas');
+  if (!canvas) return;
+  const ctx2 = canvas.getContext('2d');
+  function pct2(v,t){return v/100*t}
+  function lerp2(a,b,t){return a+(b-a)*t}
+  canvas.width  = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  if (mobRafId) cancelAnimationFrame(mobRafId);
+  (function loop(){
+    const W=canvas.width, H=canvas.height, dim=Math.min(W,H);
+    ctx2.clearRect(0,0,W,H);
+    mobRings.forEach(rg=>{
+      rg.curCX=lerp2(rg.curCX,rg.tgtCX,0.05);
+      rg.curCY=lerp2(rg.curCY,rg.tgtCY,0.05);
+      rg.curR =lerp2(rg.curR, rg.tgtR, 0.05);
+      ctx2.beginPath();
+      ctx2.arc(pct2(rg.curCX,W),pct2(rg.curCY,H),pct2(rg.curR,dim),0,Math.PI*2);
+      ctx2.strokeStyle='#d8d4cc';
+      ctx2.globalAlpha=0.6;
+      ctx2.lineWidth=1;
+      ctx2.stroke();
+      ctx2.globalAlpha=1;
+    });
+    mobRafId=requestAnimationFrame(loop);
+  })();
+}
+
+function buildMobileScatter() {
+  const scatter = document.getElementById('mob-scatter');
+  scatter.querySelectorAll('.mob-node').forEach(el=>el.remove());
+  // ensure popup exists inside scatter
+  let popup = document.getElementById('mob-node-popup');
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'mob-node-popup';
+    scatter.appendChild(popup);
+  }
+  const canvas = document.getElementById('mob-ring-canvas');
+  canvas.width  = scatter.offsetWidth;
+  canvas.height = scatter.offsetHeight;
+  const W = scatter.offsetWidth;
+  const H = scatter.offsetHeight;
+  const r = 38;
+  const topMargin = r + 32; // radio del nodo + espacio para el label "Proyectos"
+  const pos = scatterPositions(projects.length, W, H, r, topMargin);
+  let activeNode = null;
+
+  function closeMobPopup() {
+    popup.classList.remove('visible');
+    if (activeNode) {
+      activeNode.style.transition = 'transform .2s cubic-bezier(.34,1,.64,1)';
+      activeNode.style.transform = '';
+      activeNode.style.zIndex = '';
+      activeNode = null;
+    }
+    setTimeout(() => { if (!popup.classList.contains('visible')) popup.innerHTML = ''; }, 220);
+  }
+
+  projects.forEach((p, i) => {
+    const el = document.createElement('div');
+    el.className = 'mob-node';
+    el.style.left = (pos[i].x - r) + 'px';
+    el.style.top  = (pos[i].y - r) + 'px';
+    el.style.borderColor = p.color + '88';
+    el.innerHTML = `<img src="${p.icon}" alt="${p.name}" onerror="this.outerHTML='<span style=\\'font-family:var(--fm);font-size:.65rem;color:var(--ink3)\\'>${p.num}</span>'">`;
+
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (activeNode === el) { closeMobPopup(); return; }
+      if (activeNode) { activeNode.style.transform = ''; activeNode.style.zIndex = ''; activeNode.style.transition = ''; }
+      activeNode = el;
+      el.style.transition = 'transform .25s cubic-bezier(.34,1.5,.64,1)';
+      el.style.transform = 'scale(1.72)';
+      el.style.zIndex = '25';
+
+      popup.innerHTML = `
+        <span class="mnp-accent" style="background:${p.color}"></span>
+        <div class="mnp-name">${p.name}</div>
+        <div class="mnp-tagline">${p.tagline}</div>
+        <button class="mnp-btn" data-id="${p.id}">Ver proyecto →</button>`;
+
+      popup.querySelector('.mnp-btn').addEventListener('click', ev => {
+        ev.stopPropagation();
+        closeMobPopup();
+        openProject(p.id);
+      });
+
+      const scale = 1.72;
+      const nodeX = pos[i].x, nodeY = pos[i].y;
+      const enlargedR = r * scale + 6; // enlarged radius + small safety margin
+      const popW = 200, margin = 8, gap = 16;
+
+      // Measure real height after content is rendered
+      popup.style.visibility = 'hidden';
+      popup.style.left = '-999px';
+      popup.style.top = '0px';
+      const popH = popup.offsetHeight || 110;
+      popup.style.visibility = '';
+
+      // Place on the side with more room, starting from edge of enlarged icon
+      const spaceBelow = H - (nodeY + enlargedR + gap);
+      const spaceAbove = nodeY - enlargedR - gap;
+      let top;
+      if (spaceBelow >= spaceAbove) {
+        top = nodeY + enlargedR + gap;
+      } else {
+        top = nodeY - enlargedR - gap - popH;
+      }
+
+      let left = nodeX - popW / 2;
+      left = Math.max(margin, Math.min(left, W - popW - margin));
+      top  = Math.max(margin, Math.min(top,  H - popH - margin));
+      popup.style.left = left + 'px';
+      popup.style.top  = top  + 'px';
+
+      popup.classList.remove('visible');
+      requestAnimationFrame(() => popup.classList.add('visible'));
+    });
+
+    scatter.appendChild(el);
+  });
+
+  scatter.addEventListener('click', () => closeMobPopup());
+  startMobRings();
+}
+
+function buildMobileList() {
+  const list = document.getElementById('mob-proj-list');
+  // clear existing rows (keep the label)
+  list.querySelectorAll('.mob-proj-row').forEach(el => el.remove());
+
+  projects.forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'mob-proj-row';
+    row.innerHTML = `
+      <div class="mob-proj-header">
+        <div class="mob-proj-icon" style="border-color:${p.color}55">
+          <img src="${p.icon}" alt="${p.name}" onerror="this.outerHTML='<span style=\\'font-family:var(--fm);font-size:.6rem;color:var(--ink3)\\'>${p.num}</span>'">
+        </div>
+        <div class="mob-proj-header-text">
+          <div class="mob-proj-name">${p.name}</div>
+          <div class="mob-proj-sub">${p.tagline}</div>
+        </div>
+        <span class="mob-proj-chevron">▾</span>
+      </div>
+      <div class="mob-proj-body">
+        <div class="mob-proj-body-inner">
+          <p class="mob-proj-desc">${p.desc}</p>
+          <div class="mob-proj-tags">${p.tags.map(t=>`<span class="mob-proj-tag">${t}</span>`).join('')}</div>
+          <button class="mob-proj-open-btn" data-id="${p.id}">Ver proyecto completo →</button>
+        </div>
+      </div>`;
+
+    const header  = row.querySelector('.mob-proj-header');
+    const body    = row.querySelector('.mob-proj-body');
+    const chevron = row.querySelector('.mob-proj-chevron');
+
+    header.addEventListener('click', () => {
+      const isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      chevron.classList.toggle('open', !isOpen);
+    });
+
+    row.querySelector('.mob-proj-open-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      openProject(p.id);
+    });
+
+    list.appendChild(row);
+  });
+}
+
+document.getElementById('mob-see-btn').addEventListener('click', () => {
+  document.getElementById('mob-proj-list').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+// ── DESKTOP ───────────────────────────────────────────────
+const NODE_POS = [
+  [39, 15],
+  [59, 15],
+  [70, 47],
+  [30, 47],
+  [39, 73],
+  [59, 73],
+];
+
+const RING_DEFS = [
+  {cx:38, cy:42, r:26},
+  {cx:59, cy:54, r:20},
+  {cx:46, cy:61, r:36},
+  {cx:63, cy:35, r:17},
+];
+
+const homeEl  = document.getElementById('view-home');
+const canvas  = document.getElementById('ring-canvas');
+const lineSvg = document.getElementById('line-svg');
+const ctx     = canvas.getContext('2d');
+
+function syncSize() {
+  if (isMobile()) return;
+  const W = homeEl.offsetWidth;
+  const H = homeEl.offsetHeight;
+  canvas.width  = W;
+  canvas.height = H;
+  lineSvg.setAttribute('width',  W);
+  lineSvg.setAttribute('height', H);
+  lineSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  updateLines(W, H);
+}
+window.addEventListener('resize', () => {
+  syncSize();
+});
+
+function pct(val, total){ return val / 100 * total; }
+
+function updateLines(W, H) {
+  const cx = pct(50, W), cy = pct(46, H);
+  projects.forEach((p, i) => {
+    const el = document.getElementById('ln' + i);
+    if (!el) return;
+    el.setAttribute('x1', pct(NODE_POS[i][0], W));
+    el.setAttribute('y1', pct(NODE_POS[i][1], H));
+    el.setAttribute('x2', cx);
+    el.setAttribute('y2', cy);
+  });
+}
+
+const rings = RING_DEFS.map(d => ({
+  ...d, curCX:d.cx, curCY:d.cy, curR:d.r,
+  tgtCX:d.cx, tgtCY:d.cy, tgtR:d.r, tgtColor:'#d8d4cc'
+}));
+
+function setHover(idx) {
+  if (idx === -1) {
+    rings.forEach((rg, ri) => {
+      rg.tgtCX = RING_DEFS[ri].cx; rg.tgtCY = RING_DEFS[ri].cy;
+      rg.tgtR  = RING_DEFS[ri].r;  rg.tgtColor = '#d8d4cc';
+    });
+    return;
+  }
+  const [nx, ny] = NODE_POS[idx];
+  const p = projects[idx];
+  rings.forEach((rg, ri) => {
+    const pushX = (nx - RING_DEFS[ri].cx) * 0.14;
+    const pushY = (ny - RING_DEFS[ri].cy) * 0.12;
+    rg.tgtCX = RING_DEFS[ri].cx + pushX;
+    rg.tgtCY = RING_DEFS[ri].cy + pushY;
+    const dist = Math.hypot(nx - RING_DEFS[ri].cx, ny - RING_DEFS[ri].cy);
+    rg.tgtR = RING_DEFS[ri].r * (dist < 28 ? 1.08 : 0.97);
+    rg.tgtColor = (ri === 0 || ri === 2) ? p.color : '#d8d4cc';
+  });
+}
+
+function lerp(a, b, t){ return a + (b - a) * t; }
+
+(function drawLoop() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const dim = Math.min(W, H);
+  rings.forEach(rg => {
+    rg.curCX = lerp(rg.curCX, rg.tgtCX, 0.06);
+    rg.curCY = lerp(rg.curCY, rg.tgtCY, 0.06);
+    rg.curR  = lerp(rg.curR,  rg.tgtR,  0.06);
+    ctx.beginPath();
+    ctx.arc(pct(rg.curCX, W), pct(rg.curCY, H), pct(rg.curR, dim), 0, Math.PI*2);
+    ctx.strokeStyle = rg.tgtColor;
+    ctx.globalAlpha = rg.tgtColor !== '#d8d4cc' ? 0.25 : 0.55;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  });
+  requestAnimationFrame(drawLoop);
+})();
+
+// build desktop nodes
+projects.forEach((p, i) => {
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('stroke', '#c8c4bc');
+  line.setAttribute('stroke-width', '1');
+  line.setAttribute('stroke-dasharray', '3 8');
+  line.id = 'ln' + i;
+  lineSvg.appendChild(line);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'node-wrap';
+  wrap.style.left = NODE_POS[i][0] + '%';
+  wrap.style.top  = NODE_POS[i][1] + '%';
+
+  const node = document.createElement('div');
+  node.className = 'node';
+  node.style.borderColor = p.color + '66';
+  node.innerHTML = `<img src="${p.icon}" alt="${p.name}" style="width:56px;height:56px;object-fit:contain;display:block">`;
+  node.addEventListener('click', () => openProject(p.id));
+
+  const tt = document.createElement('div');
+  tt.className = 'tooltip';
+  tt.innerHTML = `<div class="tt-name">${p.name}</div><div class="tt-desc">${p.tagline}</div><div class="tt-hint">↩ abrir proyecto</div>`;
+  document.body.appendChild(tt);
+
+  node.addEventListener('mouseenter', () => {
+    setHover(i);
+    const l = document.getElementById('ln'+i);
+    l.setAttribute('stroke', p.color);
+    l.setAttribute('stroke-opacity', '0.4');
+    l.setAttribute('stroke-dasharray', '4 5');
+    const rect = node.getBoundingClientRect();
+    const ttW = 208, ttH = 110, margin = 14;
+    let top = rect.top > ttH + margin ? rect.top - ttH - margin : rect.bottom + margin;
+    let left = Math.max(12, Math.min(rect.left + rect.width/2 - ttW/2, window.innerWidth - ttW - 12));
+    tt.style.top  = top  + 'px';
+    tt.style.left = left + 'px';
+    tt.style.opacity = '1';
+  });
+  node.addEventListener('mouseleave', () => {
+    setHover(-1);
+    const l = document.getElementById('ln'+i);
+    l.setAttribute('stroke', '#c8c4bc');
+    l.setAttribute('stroke-opacity', '1');
+    l.setAttribute('stroke-dasharray', '3 8');
+    tt.style.opacity = '0';
+  });
+
+  const lbl = document.createElement('div');
+  lbl.className = 'node-label';
+  lbl.textContent = p.tagline;
+  wrap.appendChild(node);
+  wrap.appendChild(lbl);
+  homeEl.appendChild(wrap);
+});
+
+requestAnimationFrame(() => requestAnimationFrame(syncSize));
+
+// ── VIEW MANAGEMENT ───────────────────────────────────────
+const vHome    = document.getElementById('view-home');
+const vMobile  = document.getElementById('view-mobile');
+const vAbout   = document.getElementById('view-about');
+const vProject = document.getElementById('view-project');
+const vContact = document.getElementById('view-contact');
+const navBack  = document.getElementById('nav-back');
+const navAbout = document.getElementById('nav-about-btn');
+const navContactBtn = document.getElementById('nav-contact-btn');
+const corner   = document.getElementById('corner-lbl');
+const navLabel = document.getElementById('nav-label');
+let currentView = 'home';
+
+function showHome() {
+  if (isMobile()) {
+    vHome.style.display    = 'none';
+    vMobile.style.display  = 'block';
+  } else {
+    vHome.style.display    = 'block';
+    vMobile.style.display  = 'none';
+  }
+  vAbout.style.display   = 'none';
+  vProject.style.display = 'none';
+  vContact.style.display = 'none';
+  navBack.style.display  = 'none';
+  navAbout.classList.remove('active');
+  navContactBtn.classList.remove('active');
+  corner.style.display   = 'none';
+  navLabel.style.display = '';
+  document.body.style.overflow = isMobile() ? 'hidden' : 'hidden';
+  window.scrollTo({top:0, behavior:'instant'});
+  currentView = 'home';
+  if (!isMobile()) requestAnimationFrame(() => requestAnimationFrame(syncSize));
+}
+
+function showAbout() {
+  vHome.style.display    = 'none';
+  vMobile.style.display  = 'none';
+  vAbout.style.display   = 'block';
+  vProject.style.display = 'none';
+  vContact.style.display = 'none';
+  navBack.style.display  = 'none';
+  navAbout.classList.add('active');
+  navContactBtn.classList.remove('active');
+  corner.style.display   = 'none';
+  navLabel.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  vAbout.querySelectorAll('.fi').forEach(el => el.classList.remove('show'));
+  requestAnimationFrame(() => {
+    vAbout.querySelectorAll('.fi').forEach((el, i) =>
+      setTimeout(() => el.classList.add('show'), i * 60)
+    );
+  });
+  currentView = 'about';
+}
+
+function showContact() {
+  vHome.style.display    = 'none';
+  vMobile.style.display  = 'none';
+  vAbout.style.display   = 'none';
+  vProject.style.display = 'none';
+  vContact.style.display = 'block';
+  navBack.style.display  = 'none';
+  navAbout.classList.remove('active');
+  navContactBtn.classList.add('active');
+  corner.style.display   = 'none';
+  navLabel.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  vContact.querySelectorAll('.fi').forEach(el => el.classList.remove('show'));
+  requestAnimationFrame(() => {
+    vContact.querySelectorAll('.fi').forEach((el, i) =>
+      setTimeout(() => el.classList.add('show'), i * 60)
+    );
+  });
+  currentView = 'contact';
+}
+
+function openProject(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  vProject.innerHTML = `
+    <div class="proj-top fi">
+      <div class="proj-title">${p.name}</div>
+      <div class="proj-tagline">${p.tagline}</div>
+      <div class="proj-accent-line" style="background:${p.color}"></div>
+    </div>
+    <div class="proj-body">
+      <div class="fi" style="transition-delay:.07s"><span class="section-label">Descripción</span><p class="proj-desc">${p.desc}</p></div>
+      <div class="fi" style="transition-delay:.18s">
+        <span class="section-label">Demo</span>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:6px;border:1px solid var(--line);margin-bottom:2.25rem">
+          <iframe
+            src="https://www.youtube.com/embed/${p.video}"
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border:0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen loading="lazy">
+          </iframe>
+        </div>
+      </div>
+      <div class="fi" style="transition-delay:.21s"><span class="section-label">Funcionalidades clave</span><div class="feats">${p.features.map(f=>`<div class="fcard"><div class="fnum">${f.n}</div><div class="ftitle">${f.t}</div><div class="fbody">${f.b}</div></div>`).join('')}</div></div>
+      <div class="fi" style="transition-delay:.28s"><button class="back-btn" id="bb">← Volver a proyectos</button></div>
+    </div>`;
+  vHome.style.display    = 'none';
+  vMobile.style.display  = 'none';
+  vAbout.style.display   = 'none';
+  vProject.style.display = 'block';
+  vContact.style.display = 'none';
+  navBack.style.display  = 'flex';
+  navAbout.classList.remove('active');
+  navContactBtn.classList.remove('active');
+  corner.style.display   = 'none';
+  navLabel.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  window.scrollTo({top:0, behavior:'instant'});
+  document.getElementById('bb').addEventListener('click', showHome);
+  requestAnimationFrame(() => vProject.querySelectorAll('.fi').forEach(el => el.classList.add('show')));
+  currentView = 'project';
+}
+
+document.getElementById('nav-about-btn').addEventListener('click', () => currentView === 'about' ? showHome() : showAbout());
+document.getElementById('nav-contact-btn').addEventListener('click', () => currentView === 'contact' ? showHome() : showContact());
+document.getElementById('nav-back').addEventListener('click', showHome);
+document.getElementById('nav-logo').addEventListener('click', e => { e.preventDefault(); showHome(); });
+
+// init
+if (isMobile()) {
+  vHome.style.display   = 'none';
+  vMobile.style.display = 'block';
+  requestAnimationFrame(() => {
+    buildMobileScatter();
+    buildMobileList();
+  });
+} else {
+  requestAnimationFrame(() => requestAnimationFrame(syncSize));
+}
+</script>
+</body>
+</html>

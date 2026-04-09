@@ -157,8 +157,15 @@ nav{
 #view-mobile{
   display:none;
   position:fixed;left:0;right:0;top:var(--nav);bottom:var(--foot);
-  overflow-y:auto;background:var(--bg);
+  overflow:hidden;background:var(--bg);
 }
+#view-mobile.scrollable{overflow-y:auto;}
+
+/* bloque fijo inferior: sobre mí + botón, tamaño constante */
+#mob-fixed-bottom{background:var(--bg);}
+
+/* boton ver proyectos */
+#mob-see-wrap{padding:.75rem 1.25rem 1rem;}
 
 /* fondo fijo de anillos — cubre todo el viewport visible (bajo las barras) */
 #mob-ring-canvas{
@@ -176,14 +183,18 @@ nav{
 .mob-name{font-family:var(--ff);font-size:1.45rem;font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-bottom:.2rem}
 .mob-role{font-size:.82rem;color:var(--ink2);font-weight:300}
 
-/* zona scatter — ocupa todo lo que queda del viewport tras el panel info */
+/* zona scatter — altura calculada por JS para llenar el viewport disponible */
 .mob-scatter{
   position:relative;
-  height:42vh;
-  min-height:220px;
   overflow:visible;background:transparent;
 }
 .mob-scatter::before{content:none}
+
+/* boton ver proyectos */
+#mob-see-wrap{
+  padding:.75rem 1.25rem;
+  background:var(--bg);
+}
 .mob-node{
   position:absolute;width:76px;height:76px;border-radius:50%;
   background:var(--white);border:1.5px solid var(--line);
@@ -311,27 +322,33 @@ nav{
 <!-- ── MOBILE HOME ── -->
 <div id="view-mobile">
   <canvas id="mob-ring-canvas"></canvas>
-  <div class="mob-info">
-    <div class="mob-eyebrow"></div>
-    <div class="mob-name"></div>
-  </div>
 
+  <!-- scatter: altura calculada por JS = espacio disponible menos lo fijo de abajo -->
   <div class="mob-scatter" id="mob-scatter">
     <span style="position:absolute;top:.6rem;left:.85rem;font-family:var(--fm);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);z-index:5;pointer-events:none">Proyectos</span>
   </div>
 
-<div class="mob-about">
-    <span class="mob-section-label">sobre mí</span>
-    <p style="font-size:1rem;font-weight:400;line-height:1.8;color:var(--ink);font-family:var(--ff);">
+  <!-- contenido fijo: siempre visible, tamaño constante -->
+  <div id="mob-fixed-bottom">
+    <div class="mob-about">
+      <span class="mob-section-label">sobre mí</span>
+      <p style="font-size:1rem;font-weight:400;line-height:1.8;color:var(--ink);font-family:var(--ff);">
         Ingeniero civil con mención en Transporte, con experiencia en coordinación técnica de proyectos de planificación de transporte urbano, y el desarrollo de herramientas para facilitar y optimizar este trabajo.
-    </p>
-    <button class="mob-see-btn" id="mob-see-btn">ver proyectos ↓</button>
-</div>
+      </p>
+    </div>
+    <div id="mob-see-wrap">
+      <button class="mob-see-btn" id="mob-see-btn">ver proyectos ↓</button>
+    </div>
+  </div>
 
-  <div class="mob-proj-list" id="mob-proj-list">
-    <span class="mob-proj-list-label">proyectos</span>
+  <!-- lista de proyectos: oculta hasta presionar el botón -->
+  <div id="mob-below" style="display:none">
+    <div class="mob-proj-list" id="mob-proj-list">
+      <span class="mob-proj-list-label">proyectos</span>
+    </div>
   </div>
 </div>
+
 
 <!-- ── ABOUT ── -->
 <div id="view-about">
@@ -491,6 +508,7 @@ function startMobRings() {
 function buildMobileScatter() {
   const scatter = document.getElementById('mob-scatter');
   scatter.querySelectorAll('.mob-node').forEach(el=>el.remove());
+
   // popup at body level so it's never clipped
   let popup = document.getElementById('mob-node-popup');
   if (!popup) {
@@ -498,9 +516,22 @@ function buildMobileScatter() {
     popup.id = 'mob-node-popup';
     document.body.appendChild(popup);
   }
+
+  // Altura dinamica: scatter = viewport disponible menos el bloque fijo inferior
+  const navH  = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav')) || 52;
+  const footH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--foot')) || 34;
+  const fixedBottom = document.getElementById('mob-fixed-bottom');
+  const fixedH = fixedBottom ? fixedBottom.offsetHeight : 0;
+  const availH = window.innerHeight - navH - footH;
+  const scatterH = Math.max(120, availH - fixedH);
+  scatter.style.height = scatterH + 'px';
+
   const W = scatter.offsetWidth;
-  const H = scatter.offsetHeight;
-  const r = 38;
+  const H = scatterH;
+
+  // Radio proporcional al area disponible (entre 28 y 52 px)
+  const r = Math.max(28, Math.min(52, Math.round(Math.sqrt(W * H / projects.length) * 0.28)));
+
   const topMargin = r + 32;
   const pos = scatterPositions(projects.length, W, H, r, topMargin);
   let activeNode = null;
@@ -519,10 +550,14 @@ function buildMobileScatter() {
   projects.forEach((p, i) => {
     const el = document.createElement('div');
     el.className = 'mob-node';
+    const nodeSz = r * 2 + 'px';
+    el.style.width  = nodeSz;
+    el.style.height = nodeSz;
     el.style.left = (pos[i].x - r) + 'px';
     el.style.top  = (pos[i].y - r) + 'px';
     el.style.borderColor = p.color + '88';
-    el.innerHTML = `<img src="${p.icon}" alt="${p.name}" onerror="this.outerHTML='<span style=\\'font-family:var(--fm);font-size:.65rem;color:var(--ink3)\\'>${p.num}</span>'">`;
+    const imgSz = Math.round(r * 1.2) + 'px';
+    el.innerHTML = `<img src="${p.icon}" alt="${p.name}" style="width:${imgSz};height:${imgSz};object-fit:contain;display:block" onerror="this.outerHTML='<span style=\\'font-family:var(--fm);font-size:.65rem;color:var(--ink3)\\'>${p.num}</span>'">`;
 
     el.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -637,7 +672,16 @@ function buildMobileList() {
 }
 
 document.getElementById('mob-see-btn').addEventListener('click', () => {
-  document.getElementById('mob-proj-list').scrollIntoView({behavior:'smooth', block:'start'});
+  const below = document.getElementById('mob-below');
+  const vm = document.getElementById('view-mobile');
+  if (below.style.display === 'none') {
+    below.style.display = 'block';
+    vm.classList.add('scrollable');
+    // Scroll suave hasta el contenido recien revelado
+    requestAnimationFrame(() => {
+      below.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  }
 });
 
 // ── DESKTOP ───────────────────────────────────────────────
@@ -814,6 +858,11 @@ function showHome() {
     vHome.style.display    = 'none';
     vMobile.style.display  = 'block';
     document.getElementById('mob-ring-canvas').style.display = 'block';
+    // Resetear: ocultar contenido inferior y desactivar scroll
+    const below = document.getElementById('mob-below');
+    if (below) below.style.display = 'none';
+    vMobile.classList.remove('scrollable');
+    vMobile.scrollTop = 0;
   } else {
     vHome.style.display    = 'block';
     vMobile.style.display  = 'none';
@@ -828,7 +877,7 @@ function showHome() {
   navContactBtn.classList.remove('active');
   corner.style.display   = 'none';
   navLabel.style.display = '';
-  document.body.style.overflow = isMobile() ? 'hidden' : 'hidden';
+  document.body.style.overflow = 'hidden';
   window.scrollTo({top:0, behavior:'instant'});
   currentView = 'home';
   if (!isMobile()) requestAnimationFrame(() => requestAnimationFrame(syncSize));
@@ -937,6 +986,16 @@ if (isMobile()) {
 } else {
   requestAnimationFrame(() => requestAnimationFrame(syncSize));
 }
+
+// Reconstruir scatter si cambia el tamaño de pantalla (orientacion, etc.)
+let mobResizeTimer = null;
+window.addEventListener('resize', () => {
+  if (!isMobile()) return;
+  clearTimeout(mobResizeTimer);
+  mobResizeTimer = setTimeout(() => {
+    if (currentView === 'home') buildMobileScatter();
+  }, 200);
+});
 </script>
 </body>
 </html>

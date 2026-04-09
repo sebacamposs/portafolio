@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciclorrutas — Sebastián Campos Sánchez</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-btn" href="index.html">← Proyectos</a>
+    <a class="nav-btn" href="cv.html">CV</a>
+    <a class="nav-btn" href="contacto.html">Contacto</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="proj-top fi">
+    <div class="proj-title">Ciclorrutas</div>
+    <div class="proj-tagline">Evaluador gráfico de Planes Maestros de Ciclorrutas</div>
+    <div class="proj-accent-line" style="background:#a05c3a"></div>
+  </div>
+  <div class="proj-body">
+    <div class="fi" style="transition-delay:.07s">
+      <span class="section-label">Descripción</span>
+      <p class="proj-desc">Herramienta especializada para evaluar planes maestros de ciclorrutas urbanas. Tras cargar la información necesaria, permite trazar diversas configuraciones de red y evaluar el desempeño de los indicadores espaciales de forma automática e instantánea.</p>
+    </div>
+    <div class="fi" style="transition-delay:.13s">
+      <span class="section-label">Tecnologías</span>
+      <div class="chips" style="margin-bottom:2.25rem">
+        <span class="chip">GIS</span>
+        <span class="chip">Movilidad urbana</span>
+        <span class="chip">Análisis de riesgo</span>
+        <span class="chip">Planificación</span>
+      </div>
+    </div>
+    <div class="fi" style="transition-delay:.18s">
+      <span class="section-label">Demo</span>
+      <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:6px;border:1px solid var(--line);margin-bottom:2.25rem">
+        <iframe
+          src="https://drive.google.com/file/d/15Qzyfo1UfPcxHXAV41KR6BnJ56KL7HPB/preview"
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:0"
+          allow="autoplay"
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+    <div class="fi" style="transition-delay:.22s">
+      <a class="back-btn" href="index.html">← Volver a proyectos</a>
+    </div>
+  </div>
+</div>
+
+<div id="footer-bar"><span>Ingeniería civil en transporte &nbsp;·&nbsp; Software</span></div>
+
+<script>
+document.querySelectorAll('.fi').forEach((el, i) => {
+  setTimeout(() => el.classList.add('show'), i * 80);
+});
+</script>
+</body>
+</html>

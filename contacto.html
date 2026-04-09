@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contacto — Sebastián Campos Sánchez</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-btn" href="index.html">← Volver</a>
+    <a class="nav-btn" href="cv.html">CV</a>
+    <a class="nav-btn active" href="contacto.html">Contacto</a>
+  </div>
+</nav>
+
+<div class="page-wrap grid-bg">
+  <div class="about-inner" style="max-width:480px">
+    <span class="about-eyebrow fi">Contacto</span>
+    <div class="about-name fi" style="transition-delay:.06s">Hablemos</div>
+    <div class="about-divider fi" style="transition-delay:.1s;margin-top:.8rem"></div>
+    <p class="about-bio fi" style="transition-delay:.14s">Si tienes un proyecto en mente, una pregunta técnica, o simplemente quieres ponerte en contacto, puedes escribirme por cualquiera de estos medios.</p>
+    <div class="about-section fi" style="transition-delay:.18s">
+      <div class="contact-row">
+        <a class="contact-link" href="mailto:sebacamposs@hotmail.com">✉ sebacamposs@hotmail.com</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-bar"><span>Ingeniería civil en transporte &nbsp;·&nbsp; Software</span></div>
+
+<script>
+document.querySelectorAll('.fi').forEach((el, i) => {
+  setTimeout(() => el.classList.add('show'), i * 60);
+});
+</script>
+</body>
+</html>

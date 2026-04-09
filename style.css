@@ -16,6 +16,7 @@ nav{
   padding:0 2.5rem;background:var(--bg);border-bottom:1px solid var(--line);
 }
 .nav-left{display:flex;align-items:center;gap:1.5rem}
+.nav-right{display:flex;align-items:center;gap:.75rem}
 .nav-logo{
   font-family:var(--ff);font-size:1rem;font-weight:400;color:var(--ink);
   text-decoration:none;transition:opacity .2s;

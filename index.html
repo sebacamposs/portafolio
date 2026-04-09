@@ -157,15 +157,17 @@ nav{
 #view-mobile{
   display:none;
   position:fixed;left:0;right:0;top:var(--nav);bottom:var(--foot);
-  overflow:hidden;background:var(--bg);
+  overflow-y:auto;background:var(--bg);
 }
-#view-mobile.scrollable{overflow-y:auto;}
 
-/* bloque fijo inferior: sobre mí + botón, tamaño constante */
+/* bloque fijo: sobre mí, tamaño constante */
 #mob-fixed-bottom{background:var(--bg);}
 
-/* boton ver proyectos */
-#mob-see-wrap{padding:.75rem 1.25rem 1rem;}
+/* botón ver proyectos: flujo normal, se scrollea con el contenido */
+#mob-see-wrap{
+  padding:.75rem 1.25rem 1rem;
+  background:var(--bg);
+}
 
 /* fondo fijo de anillos — cubre todo el viewport visible (bajo las barras) */
 #mob-ring-canvas{
@@ -190,11 +192,7 @@ nav{
 }
 .mob-scatter::before{content:none}
 
-/* boton ver proyectos */
-#mob-see-wrap{
-  padding:.75rem 1.25rem;
-  background:var(--bg);
-}
+
 .mob-node{
   position:absolute;width:76px;height:76px;border-radius:50%;
   background:var(--white);border:1.5px solid var(--line);
@@ -323,12 +321,12 @@ nav{
 <div id="view-mobile">
   <canvas id="mob-ring-canvas"></canvas>
 
-  <!-- scatter: altura calculada por JS = espacio disponible menos lo fijo de abajo -->
+  <!-- scatter: altura = viewport disponible menos sobre-mí y botón -->
   <div class="mob-scatter" id="mob-scatter">
     <span style="position:absolute;top:.6rem;left:.85rem;font-family:var(--fm);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);z-index:5;pointer-events:none">Proyectos</span>
   </div>
 
-  <!-- contenido fijo: siempre visible, tamaño constante -->
+  <!-- sobre mí: tamaño fijo, siempre visible -->
   <div id="mob-fixed-bottom">
     <div class="mob-about">
       <span class="mob-section-label">sobre mí</span>
@@ -336,6 +334,7 @@ nav{
         Ingeniero civil con mención en Transporte, con experiencia en coordinación técnica de proyectos de planificación de transporte urbano, y el desarrollo de herramientas para facilitar y optimizar este trabajo.
       </p>
     </div>
+    <!-- botón al final del bloque fijo -->
     <div id="mob-see-wrap">
       <button class="mob-see-btn" id="mob-see-btn">ver proyectos ↓</button>
     </div>
@@ -517,13 +516,15 @@ function buildMobileScatter() {
     document.body.appendChild(popup);
   }
 
-  // Altura dinamica: scatter = viewport disponible menos el bloque fijo inferior
+  // Scatter ocupa exactamente el espacio disponible menos el bloque fijo (sobre mi + boton)
+  // Con un maximo del 60% del viewport para pantallas largas
   const navH  = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav')) || 52;
   const footH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--foot')) || 34;
+  const availH = window.innerHeight - navH - footH;
   const fixedBottom = document.getElementById('mob-fixed-bottom');
   const fixedH = fixedBottom ? fixedBottom.offsetHeight : 0;
-  const availH = window.innerHeight - navH - footH;
-  const scatterH = Math.max(120, availH - fixedH);
+  const maxScatterH = Math.round(availH * 0.60);
+  const scatterH = Math.max(120, Math.min(availH - fixedH, maxScatterH));
   scatter.style.height = scatterH + 'px';
 
   const W = scatter.offsetWidth;
@@ -858,11 +859,14 @@ function showHome() {
     vHome.style.display    = 'none';
     vMobile.style.display  = 'block';
     document.getElementById('mob-ring-canvas').style.display = 'block';
-    // Resetear: ocultar contenido inferior y desactivar scroll
-    const below = document.getElementById('mob-below');
-    if (below) below.style.display = 'none';
-    vMobile.classList.remove('scrollable');
-    vMobile.scrollTop = 0;
+    // Resetear scroll para que el boton quede al fondo
+    requestAnimationFrame(() => {
+      const seeEl = document.getElementById('mob-see-wrap');
+      const navH2 = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav')) || 52;
+      const footH2 = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--foot')) || 34;
+      const avail2 = window.innerHeight - navH2 - footH2;
+      if (seeEl) vMobile.scrollTop = seeEl.offsetTop + seeEl.offsetHeight - avail2;
+    });
   } else {
     vHome.style.display    = 'block';
     vMobile.style.display  = 'none';

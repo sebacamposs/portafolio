@@ -160,6 +160,16 @@ nav{
   overflow-y:auto;background:var(--bg);
 }
 
+/* fondo fijo de anillos — cubre todo el viewport visible (bajo las barras) */
+#mob-ring-canvas{
+  position:fixed;
+  left:0;right:0;
+  top:var(--nav);bottom:var(--foot);
+  width:100%;height:calc(100vh - var(--nav) - var(--foot));
+  pointer-events:none;
+  z-index:0;
+}
+
 /* panel info */
 .mob-info{display:none}
 .mob-eyebrow{font-family:var(--fm);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:.5rem}
@@ -171,16 +181,15 @@ nav{
   position:relative;
   height:42vh;
   min-height:220px;
-  overflow:hidden;background:var(--bg);
+  overflow:visible;background:transparent;
 }
-#mob-ring-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
 .mob-scatter::before{content:none}
 .mob-node{
   position:absolute;width:76px;height:76px;border-radius:50%;
   background:var(--white);border:1.5px solid var(--line);
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;transition:transform .18s cubic-bezier(.34,1.4,.64,1);
-  z-index:2;
+  z-index:10;
 }
 .mob-node:active{transform:scale(.9) !important}
 .mob-node img{width:46px;height:46px;object-fit:contain;display:block}
@@ -253,7 +262,7 @@ nav{
 
 /* ── MOBILE NODE POPUP ── */
 #mob-node-popup{
-  position:absolute;z-index:20;
+  position:fixed;z-index:500;
   background:var(--white);border:1px solid var(--line);
   border-radius:8px;box-shadow:0 8px 28px rgba(0,0,0,.11);
   padding:1rem 1.1rem;width:200px;
@@ -301,12 +310,13 @@ nav{
 
 <!-- ── MOBILE HOME ── -->
 <div id="view-mobile">
+  <canvas id="mob-ring-canvas"></canvas>
   <div class="mob-info">
     <div class="mob-eyebrow"></div>
     <div class="mob-name"></div>
   </div>
 
-  <div class="mob-scatter" id="mob-scatter"><canvas id="mob-ring-canvas"></canvas>
+  <div class="mob-scatter" id="mob-scatter">
     <span style="position:absolute;top:.6rem;left:.85rem;font-family:var(--fm);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);z-index:5;pointer-events:none">Proyectos</span>
   </div>
 
@@ -407,7 +417,7 @@ const projects = [
    desc:'Sistema de inventario que se actualiza en tiempo real en todos los dispositivos donde se está utilizando. Permite mantener el control y organización de la ubicación de las distintas herramientas con las que cuenta un equipo de trabajo.',
    tags:['CRUD','Tiempo real','Alertas','Reportes','Gestión'],
    features:[{n:'01',t:'Registro de movimientos',b:'Historial de entradas, salidas y ajustes con trazabilidad.'},{n:'02',t:'Alertas automáticas',b:'Notificaciones por umbral mínimo de stock.'},{n:'03',t:'Búsqueda avanzada',b:'Filtros por categoría, proveedor, fecha y estado.'},{n:'04',t:'Reportes periódicos',b:'Resúmenes diarios, semanales o mensuales exportables.'}]},
-  {id:'seg',     name:'Seguridad',   init:'Se', icon:'iconos/ipecr.png', color:'#a05070', num:'06', tagline:'Formulario IPECR', video:'VIDEO_ID_SEG',
+  {id:'seg',     name:'IPECR',   init:'Se', icon:'iconos/ipecr.png', color:'#a05070', num:'06', tagline:'Formulario IPECR', video:'VIDEO_ID_SEG',
    desc:'Formalización de formulario IPECR, desarrollado de forma que sea fácil de completar para el usuario, y la información posteriormente le llega de forma automática por correo al encargado del formulario.',
    tags:['Formularios','Seguridad','Workflow','Validaciones dinámicas'],
    features:[{n:'01',t:'Registro estructurado',b:'Campos adaptativos según la categoría del incidente.'},{n:'02',t:'Validaciones en tiempo real',b:'Lógica dinámica para integridad de datos.'},{n:'03',t:'Flujo de aprobación',b:'Revisión multi-nivel con notificaciones automáticas.'},{n:'04',t:'Trazabilidad completa',b:'Historial de estado y acciones por caso.'}]}
@@ -452,8 +462,12 @@ function startMobRings() {
   const ctx2 = canvas.getContext('2d');
   function pct2(v,t){return v/100*t}
   function lerp2(a,b,t){return a+(b-a)*t}
-  canvas.width  = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight - parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav')) - parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--foot'));
+  }
+  resize();
+  window.addEventListener('resize', resize);
   if (mobRafId) cancelAnimationFrame(mobRafId);
   (function loop(){
     const W=canvas.width, H=canvas.height, dim=Math.min(W,H);
@@ -477,20 +491,17 @@ function startMobRings() {
 function buildMobileScatter() {
   const scatter = document.getElementById('mob-scatter');
   scatter.querySelectorAll('.mob-node').forEach(el=>el.remove());
-  // ensure popup exists inside scatter
+  // popup at body level so it's never clipped
   let popup = document.getElementById('mob-node-popup');
   if (!popup) {
     popup = document.createElement('div');
     popup.id = 'mob-node-popup';
-    scatter.appendChild(popup);
+    document.body.appendChild(popup);
   }
-  const canvas = document.getElementById('mob-ring-canvas');
-  canvas.width  = scatter.offsetWidth;
-  canvas.height = scatter.offsetHeight;
   const W = scatter.offsetWidth;
   const H = scatter.offsetHeight;
   const r = 38;
-  const topMargin = r + 32; // radio del nodo + espacio para el label "Proyectos"
+  const topMargin = r + 32;
   const pos = scatterPositions(projects.length, W, H, r, topMargin);
   let activeNode = null;
 
@@ -534,31 +545,37 @@ function buildMobileScatter() {
         openProject(p.id);
       });
 
+      // Use fixed coords: node's position relative to viewport
       const scale = 1.72;
-      const nodeX = pos[i].x, nodeY = pos[i].y;
-      const enlargedR = r * scale + 6; // enlarged radius + small safety margin
+      const nodeRect = el.getBoundingClientRect();
+      const nodeCX = nodeRect.left + nodeRect.width / 2;
+      const nodeCY = nodeRect.top  + nodeRect.height / 2;
+      const enlargedR = r * scale + 6;
       const popW = 200, margin = 8, gap = 16;
 
-      // Measure real height after content is rendered
       popup.style.visibility = 'hidden';
       popup.style.left = '-999px';
       popup.style.top = '0px';
       const popH = popup.offsetHeight || 110;
       popup.style.visibility = '';
 
-      // Place on the side with more room, starting from edge of enlarged icon
-      const spaceBelow = H - (nodeY + enlargedR + gap);
-      const spaceAbove = nodeY - enlargedR - gap;
+      const navH  = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav')) || 52;
+      const footH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--foot')) || 34;
+      const vH = window.innerHeight;
+
+      const spaceBelow = vH - footH - (nodeCY + enlargedR + gap);
+      const spaceAbove = nodeCY - navH - enlargedR - gap;
       let top;
       if (spaceBelow >= spaceAbove) {
-        top = nodeY + enlargedR + gap;
+        top = nodeCY + enlargedR + gap;
       } else {
-        top = nodeY - enlargedR - gap - popH;
+        top = nodeCY - enlargedR - gap - popH;
       }
 
-      let left = nodeX - popW / 2;
-      left = Math.max(margin, Math.min(left, W - popW - margin));
-      top  = Math.max(margin, Math.min(top,  H - popH - margin));
+      let left = nodeCX - popW / 2;
+      left = Math.max(margin, Math.min(left, window.innerWidth - popW - margin));
+      top  = Math.max(navH + margin, Math.min(top, vH - footH - popH - margin));
+
       popup.style.left = left + 'px';
       popup.style.top  = top  + 'px';
 
@@ -796,9 +813,12 @@ function showHome() {
   if (isMobile()) {
     vHome.style.display    = 'none';
     vMobile.style.display  = 'block';
+    document.getElementById('mob-ring-canvas').style.display = 'block';
   } else {
     vHome.style.display    = 'block';
     vMobile.style.display  = 'none';
+    const mc = document.getElementById('mob-ring-canvas');
+    if(mc) mc.style.display = 'none';
   }
   vAbout.style.display   = 'none';
   vProject.style.display = 'none';
@@ -817,6 +837,7 @@ function showHome() {
 function showAbout() {
   vHome.style.display    = 'none';
   vMobile.style.display  = 'none';
+  const mc = document.getElementById('mob-ring-canvas'); if(mc) mc.style.display='none';
   vAbout.style.display   = 'block';
   vProject.style.display = 'none';
   vContact.style.display = 'none';
@@ -838,6 +859,7 @@ function showAbout() {
 function showContact() {
   vHome.style.display    = 'none';
   vMobile.style.display  = 'none';
+  const mc = document.getElementById('mob-ring-canvas'); if(mc) mc.style.display='none';
   vAbout.style.display   = 'none';
   vProject.style.display = 'none';
   vContact.style.display = 'block';
@@ -883,6 +905,7 @@ function openProject(id) {
     </div>`;
   vHome.style.display    = 'none';
   vMobile.style.display  = 'none';
+  const mc2 = document.getElementById('mob-ring-canvas'); if(mc2) mc2.style.display='none';
   vAbout.style.display   = 'none';
   vProject.style.display = 'block';
   vContact.style.display = 'none';

@@ -453,7 +453,7 @@ function scatterPositions(n, W, H, r, topMargin) {
       const y = minY + Math.random() * (H - minY - margin);
       let ok = true;
       for (const p of positions) {
-        if (Math.hypot(p.x - x, p.y - y) < r * 2 + 14) { ok = false; break; }
+        if (Math.hypot(p.x - x, p.y - y) < r * 2 + 18) { ok = false; break; }
       }
       if (ok) { positions.push({x, y}); placed = true; break; }
     }

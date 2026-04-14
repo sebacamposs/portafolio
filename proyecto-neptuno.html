@@ -6,6 +6,110 @@
 <title>Neptuno — Sebastián Campos Sánchez</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+
+.proj-top  { max-width: 1100px; }
+.proj-body { max-width: 1100px; }
+
+.editorial-row {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  align-items: start;
+  gap: 0;
+  margin-bottom: 2.5rem;
+}
+.editorial-row.img-right {
+  grid-template-columns: 2fr 3fr;
+}
+
+.ed-img-col { cursor: zoom-in; }
+.ed-img-col img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: opacity .22s;
+}
+.ed-img-col:hover img { opacity: .88; }
+
+.ed-text-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+  padding: 2.5rem 3rem;
+}
+.editorial-row:not(.img-right) .ed-text-col { border-left:  1px solid var(--line); }
+.editorial-row.img-right       .ed-text-col { border-right: 1px solid var(--line); }
+
+.ed-label {
+  font-family: var(--fm);
+  font-size: .62rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: .85rem;
+  display: block;
+}
+.ed-accent {
+  width: 28px;
+  height: 2px;
+  background: #5a8a6a;
+  border-radius: 2px;
+  margin-bottom: 1.2rem;
+}
+.ed-text {
+  font-size: .95rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--ink2);
+}
+.ed-text p + p { margin-top: .8rem; }
+
+.ed-placeholder { display:flex; flex-direction:column; gap:.55rem; }
+.ed-placeholder-line {
+  height: .62rem; border-radius: 2px;
+  background: var(--line); opacity: .4;
+}
+
+/* ── LIGHTBOX ── */
+#lb-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(26,24,20,.88);
+  backdrop-filter: blur(5px);
+  align-items: center; justify-content: center;
+  cursor: zoom-out;
+}
+#lb-overlay.open { display: flex; }
+#lb-img {
+  max-width: 93vw; max-height: 90vh;
+  border-radius: 5px;
+  box-shadow: 0 28px 72px rgba(0,0,0,.4);
+  object-fit: contain;
+}
+#lb-close {
+  position: fixed; top: 1.2rem; right: 1.4rem;
+  font-size: 1.3rem; color: var(--white);
+  cursor: pointer; opacity: .65; transition: opacity .15s;
+  background: none; border: none; z-index: 910;
+}
+#lb-close:hover { opacity: 1; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  .editorial-row,
+  .editorial-row.img-right { grid-template-columns: 1fr; }
+  .ed-img-col { order: 0; }
+  .ed-text-col {
+    order: 1;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: 1px solid var(--line);
+    padding: 1.75rem 1.25rem;
+    align-self: auto;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -19,27 +123,100 @@
   </div>
 </nav>
 
+<div id="lb-overlay">
+  <button id="lb-close">✕</button>
+  <img id="lb-img" src="" alt="">
+</div>
+
 <div class="page-wrap">
+
   <div class="proj-top fi">
     <div class="proj-title">Neptuno</div>
     <div class="proj-tagline">Visor y editor de redes SATURN</div>
     <div class="proj-accent-line" style="background:#5a8a6a"></div>
   </div>
+
   <div class="proj-body">
-    <div class="fi" style="transition-delay:.07s">
+
+    <!-- Descripción -->
+    <div class="fi" style="transition-delay:.07s; margin-bottom:2.5rem;">
       <span class="section-label">Descripción</span>
       <p class="proj-desc">Neptuno es un visualizador y editor de redes de modelación SATURN. Cargas un archivo .dat, y este se despliega sobre un mapa base. Con el se pueden agregar y eliminar nodos, agregar y eliminar arcos, agregar y eliminar zonas, agregar pistas solo bus, entre otras opciones.</p>
     </div>
-    <div class="fi" style="transition-delay:.13s">
-      <span class="section-label">Tecnologías</span>
-      <div class="chips" style="margin-bottom:2.25rem">
-        <span class="chip">Plataforma</span>
-        <span class="chip">APIs REST</span>
-        <span class="chip">Arquitectura modular</span>
-        <span class="chip">Multiusuario</span>
+
+    <!-- Bloque 1: imagen izquierda -->
+    <div class="fi editorial-row" style="transition-delay:.10s">
+      <div class="ed-img-col" data-src="imagenes_portafolio/Neptuno/1.png">
+        <img src="imagenes_portafolio/Neptuno/1.png" alt="Neptuno — captura 1">
+      </div>
+      <div class="ed-text-col">
+        <span class="ed-label"><!-- ✏️ Título --></span>
+        <div class="ed-accent"></div>
+        <div class="ed-text">
+         Permite prender y  apagar capas, correspondientes a los distintos elementos de la red 
+        </div>
       </div>
     </div>
-    <div class="fi" style="transition-delay:.18s">
+
+    <!-- Bloque 2: imagen derecha -->
+    <div class="fi editorial-row img-right" style="transition-delay:.13s">
+      <div class="ed-text-col">
+        <span class="ed-label"><!-- ✏️ Título --></span>
+        <div class="ed-accent"></div>
+        <div class="ed-text">
+         Puedes agregar o eliminar nodos, arcos y zonas
+        </div>
+      </div>
+      <div class="ed-img-col" data-src="imagenes_portafolio/Neptuno/2.png">
+        <img src="imagenes_portafolio/Neptuno/2.png" alt="Neptuno — captura 2">
+      </div>
+    </div>
+
+    <!-- Bloque 3: imagen izquierda -->
+    <div class="fi editorial-row" style="transition-delay:.16s">
+      <div class="ed-img-col" data-src="imagenes_portafolio/Neptuno/3.png">
+        <img src="imagenes_portafolio/Neptuno/3.png" alt="Neptuno — captura 3">
+      </div>
+      <div class="ed-text-col">
+        <span class="ed-label"><!-- ✏️ Título --></span>
+        <div class="ed-accent"></div>
+        <div class="ed-text">
+          Agregar pistas solo bus, de forma que se codifiquen como arcos paralelos
+        </div>
+      </div>
+    </div>
+
+    <!-- Bloque 4: imagen derecha -->
+    <div class="fi editorial-row img-right" style="transition-delay:.19s">
+      <div class="ed-text-col">
+        <span class="ed-label"><!-- ✏️ Título --></span>
+        <div class="ed-accent"></div>
+        <div class="ed-text">
+          Cambiar los flujos de saturación y velocidades de los arcos
+        </div>
+      </div>
+      <div class="ed-img-col" data-src="imagenes_portafolio/Neptuno/4.png">
+        <img src="imagenes_portafolio/Neptuno/4.png" alt="Neptuno — captura 4">
+      </div>
+    </div>
+
+    <!-- Bloque 5: imagen derecha -->
+      <div class="fi editorial-row" style="transition-delay:.25s; margin-bottom:2.5rem;">
+        <div class="ed-img-col" data-src="imagenes_portafolio/Neptuno/5.png">
+          <img src="imagenes_portafolio/Neptuno/5.png" alt="Neptuno — captura 5">
+        </div>
+      <div class="ed-text-col">
+        <span class="ed-label"><!-- ✏️ Título --></span>
+        <div class="ed-accent"></div>
+        <div class="ed-text">
+          entre otras cosas
+          <!-- <p>Texto captura 5...</p> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo -->
+    <div class="fi" style="transition-delay:.28s; margin-bottom:2rem;">
       <span class="section-label">Demo</span>
       <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:6px;border:1px solid var(--line);margin-bottom:2.25rem">
         <iframe
@@ -50,9 +227,11 @@
         </iframe>
       </div>
     </div>
-    <div class="fi" style="transition-delay:.22s">
+
+    <div class="fi" style="transition-delay:.31s; padding-bottom:4rem;">
       <a class="back-btn" href="index.html">← Volver a proyectos</a>
     </div>
+
   </div>
 </div>
 
@@ -62,6 +241,21 @@
 document.querySelectorAll('.fi').forEach((el, i) => {
   setTimeout(() => el.classList.add('show'), i * 80);
 });
+
+const overlay = document.getElementById('lb-overlay');
+const lbImg   = document.getElementById('lb-img');
+const lbClose = document.getElementById('lb-close');
+
+document.querySelectorAll('.ed-img-col[data-src]').forEach(el => {
+  el.addEventListener('click', () => {
+    lbImg.src = el.dataset.src;
+    overlay.classList.add('open');
+  });
+});
+function closeLb(){ overlay.classList.remove('open'); lbImg.src=''; }
+overlay.addEventListener('click', closeLb);
+lbClose.addEventListener('click', closeLb);
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeLb(); });
 </script>
 </body>
 </html>
